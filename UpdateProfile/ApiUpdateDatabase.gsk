@@ -1,0 +1,108 @@
+$DropboxFolder         = "C:\Users\aslaug25\Dropbox\Apps\Geosphere\"
+$GeocachesFolder       = $DropboxFolder + "Geocaches\"
+$CachesInIcelandFolder = $GeocachesFolder + "Caches in Iceland\"
+$FoundCachesFolder     = $GeocachesFolder + "Found Caches\"
+$ProfilesFolder        = $DropboxFolder + "Profiles\"
+$LogFile               = $DropboxFolder + "zDownloadLog.log"
+
+DATABASE Name="Iceland"
+FILTER Name="NoFilter"
+$LogMessage = "Getting Icelandic caches."
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+
+### Find found caches.
+GcGetCaches Settings="Get Icelandic Caches" ShowSummary=No
+FILTER Name="Finds Without Date"
+
+FILTER Name="Found in the last 2 weeks"
+IF $_FilterCount > 0
+	$LogMessage = "Moving found caches."
+	$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+	SHOWSTATUS Msg=$LogMessage
+	MOVECOPY Settings="Add Found Caches"
+ENDIF
+
+### Update my caches
+
+DATABASE Name="Iceland"
+FILTER Name="My Geocaches"
+
+$LogMessage = "Refreshing my caches"
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+GcRefresh Scope=Filter LogsPerCache=30 Format=Full ShowSummary=No
+
+### Refresh found cache statuses
+
+DATABASE Name="Found Caches"
+$LogMessage = "Refreshing all found cache statuses."
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+GcStatusCheck Scope="Filter" ShowSummary=N
+
+#################################################################################################################################################
+### CONTACT API FOR ARCHIVED CACHES ###
+
+DATABASE Name="Iceland"
+GcStatusCheck Scope="Filter" ShowSummary=N
+FILTER Name="Archived Caches"
+
+# Create the strings to send the requests.
+<data> VarName=$bookList
+<GetBookmarkListByGuidRequest xmlns="http://www.geocaching.com/Geocaching.Live/data">
+  <AccessToken>{ACCESSTOKEN}</AccessToken>
+  <BookmarkListGuid>9234970a-d0d6-45b1-824f-b10d85ce103e</BookmarkListGuid>
+</GetBookmarkListByGuidRequest>
+<enddata>
+$LogMessage = "Getting archived bookmark list"
+ $Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+
+# Get the list of caches from API.
+$dataB = gcapi("GetBookmarkListByGuid",$bookList)
+
+IF $_GcApiError
+  # If error occurs, show error.
+  $LogMessage = "ERROR getting bookmark list."
+  $Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+  SHOWSTATUS Msg=$LogMessage
+ELSE
+  # Go ahead and check for caches not
+  # in the list and add them to the string
+  # if they are not in the list.
+  $LogMessage = "Finding archived caches not in the list."
+  $Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+  SHOWSTATUS Msg=$LogMessage
+  $Request = "<AddGeocachesToBookmarkListRequest xmlns='http://www.geocaching.com/Geocaching.Live/data'><AccessToken>{ACCESSTOKEN}</AccessToken><BookmarkListGuid>9234970a-d0d6-45b1-824f-b10d85ce103e</BookmarkListGuid><CacheCodes>"
+  $i = 0
+  $status = sqlite("sql",$_SqlGrid, "sqlget=0")
+  WHILE NOT($_sqleol)
+    $gcCode = SqlGet("Code")
+    $cont = sqlite("sql","select count(*) from GcApi WHERE data LIKE '" + SqlGet("Code") + "'","Headings=N")
+    IF $cont = "0"
+      $Request = $Request + "<string xmlns='http://schemas.microsoft.com/2003/10/Serialization/Arrays'>"
+      $Request = $Request + SqlGet("Code")
+      $Request = $Request + "</string>"
+      $i = $i +1
+    ENDIF
+    SQLNEXT
+  ENDWHILE
+
+  # Add the rest of the string to finish the request.
+  $Request = $Request + "</CacheCodes>"
+  $Request = $Request + "</AddGeocachesToBookmarkListRequest>"
+
+  # Only request from API if we need to add caches.
+  IF $i > 0
+    $LogMessage = "Adding caches to bookmark list."
+    $Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+    SHOWSTATUS Msg=$LogMessage
+    $data = gcapi("AddGeocachesToBookmarkList",$Request)
+    IF $_GcApiError
+      $LogMessage = "ERROR adding caches to bookmark list."
+      $Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+      SHOWSTATUS Msg=$LogMessage
+    ENDIF
+  ENDIF
+ENDIF

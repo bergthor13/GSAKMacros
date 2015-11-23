@@ -1,0 +1,27 @@
+$DropboxFolder         = "C:\Users\aslaug25\Dropbox\Apps\Geosphere\"
+$GeocachesFolder       = $DropboxFolder + "Geocaches\"
+$CachesInIcelandFolder = $GeocachesFolder + "Caches in Iceland\"
+$FoundCachesFolder     = $GeocachesFolder + "Found Caches\"
+$ProfilesFolder        = $DropboxFolder + "Profiles\"
+$LogFile               = $DropboxFolder + "zDownloadLog.log"
+
+DATABASE Name="Iceland"
+$LogMessage = "Loading BadgeGen macro."
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+MACRO File=BadgeGen.gsk
+RUNPGM pgm="C:\Program Files (x86)\Mozilla Firefox\firefox.exe" parms="imacros://run/?m=UploadStats.iim"
+
+$DateAndTime = "$_Today" + " - " + Time()
+$DateAndTime = RegExReplace(":",$DateAndTime,"-")
+$profileHTML = PutFile($ProfilesFolder + $DateAndTime + ".html", GetClipText())
+IF Left($profileHTML,7) = "*Error*"
+	$LogMessage = "ERROR writing profile to file."
+	$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+ELSE
+	$LogMessage = "Profile written to file."
+	$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+ENDIF
+
+$LogMessage = "Process Finished Successfully."
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)

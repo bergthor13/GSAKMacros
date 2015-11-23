@@ -1,0 +1,52 @@
+$DropboxFolder         = "C:\Users\aslaug25\Dropbox\Apps\Geosphere\"
+$GeocachesFolder       = $DropboxFolder + "Geocaches\"
+$CachesInIcelandFolder = $GeocachesFolder + "Caches in Iceland\"
+$FoundCachesFolder     = $GeocachesFolder + "Found Caches\"
+$ProfilesFolder        = $DropboxFolder + "Profiles\"
+$LogFile               = $DropboxFolder + "zDownloadLog.log"
+
+DATABASE Name="Iceland"
+FILTER Name="NoFilter"
+$LogMessage = "Deleting GPX files."
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+FILEERASE File=$CachesInIcelandFolder*.gpx OnError=Continue
+FILEERASE File=$FoundCachesFolder*.gpx OnError=Continue
+
+FILTER Name="Archived Caches"
+$LogMessage = "Creating file 'Archived Caches ($_FilterCount).gpx'"
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+EXPORT Settings="From Pocket Queries" Type=GPX File=$CachesInIcelandFolder"Archived Caches ($_FilterCount).gpx"
+
+FILTER Name="Archived Caches" Reverse=Yes
+$LogMessage = "Creating file 'Active Caches ($_FilterCount).gpx'"
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+EXPORT Settings="From Pocket Queries" Type=GPX File=$CachesInIcelandFolder"Active Caches ($_FilterCount).gpx"
+
+FILTER Name="Current Unfound Caches (GPS)"
+$LogMessage = "Creating file 'UnfoundForGPS.gpx'"
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+EXPORT Settings="ForGPS" Type=GPX File=$CachesInIcelandFolder"UnfoundForGPS.gpx"
+
+### ALL FOUND CACHES ###
+DATABASE Name="Found Caches"
+FILTER Name="NoFilter"
+$LogMessage = "Creating file 'Found Caches ($_FilterCount).gpx'"
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+EXPORT Settings="From Pocket Queries" Type=GPX File=$FoundCachesFolder"Found Caches ($_FilterCount).gpx"
+
+FILTER Name="USA - Found"
+$LogMessage = "Creating file 'United States ($_FilterCount).gpx'"
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+EXPORT Settings="From Pocket Queries" Type=GPX File=$FoundCachesFolder"United States ($_FilterCount).gpx"
+
+FILTER Name="ISL - Found"
+$LogMessage = "Creating file 'Iceland ($_FilterCount).gpx'"
+$Data = AppendFile($LogFile, "[" + "$_Today" + " - " + Time() +"] " + $LogMessage + $_NewLine)
+SHOWSTATUS Msg=$LogMessage
+EXPORT Settings="From Pocket Queries" Type=GPX File=$FoundCachesFolder"Iceland ($_FilterCount).gpx"
