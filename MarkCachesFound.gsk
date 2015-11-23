@@ -1,0 +1,52 @@
+GOTO POSITION=TOP
+
+# Open the database that contains the Field Notes.
+$File=$_AppData + "\gsak.db3"
+$_sql="ATTACH '$File' AS GSAKDB3"
+$Status=Sqlite("sql",$_sql)
+
+# Go through all of the caches that were imported and mark them as found/DNF if applicable.
+WHILE NOT($_EOL)
+	# Query the database for the.
+	# Getting the date of the field note
+	TRANSACTION Action=BEGIN
+		$_Sql = sqlite("sql","SELECT pDate, pType FROM PublishLogs WHERE (pCode='$d_code') AND pPublished = 0;","Headings=N")
+	TRANSACTION Action=End
+
+	# If the cache does not have a Field Note
+	IF IsEmpty($_Sql)
+		BREAK
+	ENDIF
+
+	# Get the type of field note
+	$logType = Extract($_Sql, ";", 2)
+
+	# Get only the Date part of the timestamp
+	$foundDate = Extract($_Sql, " ", 1)
+	
+	# Remove all dashes.
+	$foundDate = Keep($foundDate, "0123456789", "C")
+
+	IF $logType = "Found it"
+		$d_Found = true
+		$d_FoundByMeDate = StringToDate($foundDate)
+	ENDIF
+
+	IF $logType = "Attended"
+		$d_Found = true
+		$d_FoundByMeDate = StringToDate($foundDate)
+	ENDIF
+
+	IF $logType = "Webcam Photo Taken"
+		$d_Found = true
+		$d_FoundByMeDate = StringToDate($foundDate)
+	ENDIF
+
+	IF $logType = "Didn't find it"
+		$d_DNF = true
+		$d_DNFDate = StringToDate($foundDate)
+	ENDIF
+
+	GOTO POSITION=NEXT
+ENDWHILE
+$Status=Sqlite("sql","DETACH GSAKDB3")

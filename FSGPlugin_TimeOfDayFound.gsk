@@ -1,0 +1,207 @@
+#-------------------------------------------------------------------------------
+# MacVersion = 0.1
+# MacDescription = FSG Plugin - Evaluate time of day found
+# MacAuthor = bergtor05
+# MacFileName = FSGPlugin_TimeOfDayFound.gsk
+# MacUrl =
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# MAIN
+#-------------------------------------------------------------------------------
+
+#IF $_MacroLevel = 1
+#  RETURN msg="This macro is a FindStatGen PlugIn and cannot be run directly. $_CrLf To use the plugin, add the following line to one of the notes $_CrLf sections in the FindStatsGen macro: $_CrLf $_CrLF <plugin>FSGPlugin_TimeOfDayFound</plugin>"
+#ENDIF
+
+GOSUB Name=DeclareVariables
+GOSUB Name=InitVariables
+GOSUB Name=FindHourlyFinds
+GOSUB Name=WriteOutput
+
+# return data to FSG
+$p_FSGData = $MyOut
+
+
+#-------------------------------------------------------------------------------
+BEGINSUB Name=WriteOutput
+#-------------------------------------------------------------------------------
+
+$MyOut = $MyOut + "<div style='width:740px; font-family: Verdana, Arial, sans-serif; font-size: 12px;'><table width='100%'><tbody>"
+$MyOut = $MyOut + "<tr><td style='width:85px; background: #5F8C66; font-weight: bold; text-align: left'>Time</td><td style='background: #5F8C66; font-weight: bold; text-align: left'>Count</td><td style='background: #5F8C66; font-weight: bold; text-align: left'>Percent</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>00:00-00:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour0 + "</td><td style='background: #A4F2B1; text-align: left'>" + NumToStr(val($Hour0)/val($Total)) + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>01:00-01:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour1 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Total + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>02:00-02:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour2 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour2 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>03:00-03:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour3 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour3 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>04:00-04:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour4 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour4 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>05:00-05:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour5 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour5 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>06:00-06:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour6 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour6 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>07:00-07:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour7 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour7 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>08:00-08:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour8 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour8 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>09:00-09:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour9 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour9 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>10:00-10:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour10 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour10 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>11:00-11:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour11 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour11 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>12:00-12:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour12 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour12 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>13:00-13:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour13 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour13 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>14:00-14:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour14 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour14 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>15:00-15:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour15 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour15 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>16:00-16:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour16 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour16 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>17:00-17:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour17 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour17 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>18:00-18:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour18 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour18 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>19:00-19:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour19 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour19 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>20:00-20:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour20 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour20 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>21:00-21:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour21 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour21 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>22:00-22:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour22 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour22 + "</td></tr>"
+$MyOut = $MyOut + "<tr><td style='background: #79B282; text-align: left'>23:00-23:59</td><td style='background: #A4F2B1; text-align: left'>" + $Hour23 + "</td><td style='background: #A4F2B1; text-align: left'>" + $Hour23 + "</td></tr>"
+
+
+
+
+$MyOut = $MyOut + "</tbody></table></div>"
+
+ENDSUB
+
+#-------------------------------------------------------------------------------
+BEGINSUB Name=FindHourlyFinds
+#-------------------------------------------------------------------------------
+Database name="Found Caches"
+CancelFilter
+$Total = "$_DbCount"
+
+$_sql = "MyLogTime like '00%'"
+Mfilter where=$_sql
+$Hour0 = "$_FilterCount"
+
+$_sql = "MyLogTime like '01%'"
+Mfilter where=$_sql
+$Hour1 = "$_FilterCount"
+
+$_sql = "MyLogTime like '02%'"
+Mfilter where=$_sql
+$Hour2 = "$_FilterCount"
+
+$_sql = "MyLogTime like '03%'"
+Mfilter where=$_sql
+$Hour3 = "$_FilterCount"
+
+$_sql = "MyLogTime like '04%'"
+Mfilter where=$_sql
+$Hour4 = "$_FilterCount"
+
+$_sql = "MyLogTime like '05%'"
+Mfilter where=$_sql
+$Hour5 = "$_FilterCount"
+
+$_sql = "MyLogTime like '06%'"
+Mfilter where=$_sql
+$Hour6 = "$_FilterCount"
+
+$_sql = "MyLogTime like '07%'"
+Mfilter where=$_sql
+$Hour7 = "$_FilterCount"
+
+$_sql = "MyLogTime like '08%'"
+Mfilter where=$_sql
+$Hour8 = "$_FilterCount"
+
+$_sql = "MyLogTime like '09%'"
+Mfilter where=$_sql
+$Hour9 = "$_FilterCount"
+
+$_sql = "MyLogTime like '10%'"
+Mfilter where=$_sql
+$Hour10 = "$_FilterCount"
+
+$_sql = "MyLogTime like '11%'"
+Mfilter where=$_sql
+$Hour11 = "$_FilterCount"
+
+$_sql = "MyLogTime like '12%'"
+Mfilter where=$_sql
+$Hour12 = "$_FilterCount"
+
+$_sql = "MyLogTime like '13%'"
+Mfilter where=$_sql
+$Hour13 = "$_FilterCount"
+
+$_sql = "MyLogTime like '14%'"
+Mfilter where=$_sql
+$Hour14 = "$_FilterCount"
+
+$_sql = "MyLogTime like '15%'"
+Mfilter where=$_sql
+$Hour15 = "$_FilterCount"
+
+$_sql = "MyLogTime like '16%'"
+Mfilter where=$_sql
+$Hour16 = "$_FilterCount"
+
+$_sql = "MyLogTime like '17%'"
+Mfilter where=$_sql
+$Hour17 = "$_FilterCount"
+
+$_sql = "MyLogTime like '18%'"
+Mfilter where=$_sql
+$Hour18 = "$_FilterCount"
+
+$_sql = "MyLogTime like '19%'"
+Mfilter where=$_sql
+$Hour19 = "$_FilterCount"
+
+$_sql = "MyLogTime like '20%'"
+Mfilter where=$_sql
+$Hour20 = "$_FilterCount"
+
+$_sql = "MyLogTime like '21%'"
+Mfilter where=$_sql
+$Hour21 = "$_FilterCount"
+
+$_sql = "MyLogTime like '22%'"
+Mfilter where=$_sql
+$Hour22 = "$_FilterCount"
+
+$_sql = "MyLogTime like '23%'"
+Mfilter where=$_sql
+$Hour23 = "$_FilterCount"
+
+ENDSUB
+
+#-------------------------------------------------------------------------------
+BEGINSUB Name=DeclareVariables
+#-------------------------------------------------------------------------------
+
+Declare Var=$MyOut Type=String
+Declare Var=$Total Type=String
+Declare Var=$Hour0 Type=String
+Declare Var=$Hour1 Type=String
+Declare Var=$Hour2 Type=String
+Declare Var=$Hour3 Type=String
+Declare Var=$Hour4 Type=String
+Declare Var=$Hour5 Type=String
+Declare Var=$Hour6 Type=String
+Declare Var=$Hour7 Type=String
+Declare Var=$Hour8 Type=String
+Declare Var=$Hour9 Type=String
+Declare Var=$Hour10 Type=String
+Declare Var=$Hour11 Type=String
+Declare Var=$Hour12 Type=String
+Declare Var=$Hour13 Type=String
+Declare Var=$Hour14 Type=String
+Declare Var=$Hour15 Type=String
+Declare Var=$Hour16 Type=String
+Declare Var=$Hour17 Type=String
+Declare Var=$Hour18 Type=String
+Declare Var=$Hour19 Type=String
+Declare Var=$Hour20 Type=String
+Declare Var=$Hour21 Type=String
+Declare Var=$Hour22 Type=String
+Declare Var=$Hour23 Type=String
+
+ENDSUB
+
+#-------------------------------------------------------------------------------
+BEGINSUB Name=InitVariables
+#-------------------------------------------------------------------------------
+  $MyOut = ""
+
+ENDSUB

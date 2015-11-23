@@ -1,0 +1,25 @@
+#*******************************************
+# MacVersion = 3.0
+# MacDescription = Update the GSAK databases and upload stats to profile.
+# MacAuthor = bergtor05
+# MacFileName = UpdateProfileMBP.gsk
+# MacUrl =
+#*******************************************
+SPEEDMODE Status=ON
+$DropboxFolder         = "C:\Users\aslaug25\Dropbox\Apps\Geosphere\"
+$GeocachesFolder       = $DropboxFolder + "Geocaches\"
+$CachesInIcelandFolder = $GeocachesFolder + "Caches in Iceland\"
+$FoundCachesFolder     = $GeocachesFolder + "Found Caches\"
+$ProfilesFolder        = $DropboxFolder + "Profiles\"
+$LogFile               = $DropboxFolder + "zDownloadLog.log"
+
+### CONTACT API FOR UPDATING DATABASE ###
+MACRO File=UpdateProfile\ApiUpdateDatabase.gsk
+MACRO File=CopyToDropbox.gsk
+
+### REFRESH GPX FILES ###
+MACRO File=UpdateProfile\RefreshFiles.gsk
+
+SPEEDMODE Status=Off
+### RUN PROFILE STATS ###
+MACRO File=UpdateProfile\RunProfileStats.gsk
